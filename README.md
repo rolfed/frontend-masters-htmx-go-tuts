@@ -1,11 +1,15 @@
 HTMX & Go Tutorial
 
 
-## Clone project
+## Clone and Install
 ```bash
 git clone github.com:rolfed/htmx-go
 cd htmx-go
-go mod init mywebsite.com/htmx-go
+```
+
+## Run project
+```bash
+air
 ```
 
 
