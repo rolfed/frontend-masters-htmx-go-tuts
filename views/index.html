@@ -8,7 +8,9 @@
         <meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, width=device-width" />
         <title>HTMX + Go</title>
         <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.15/dist/tailwind.min.css" rel="stylesheet">
-        <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+        <link href="/css/style.css" rel="stylesheet">
+        <script src="https://unpkg.com/htmx.org@1.9.10" integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC" crossorigin="anonymous"></script>
+
 
     </head>
     <body class="container mx-auto py-4">
@@ -16,6 +18,7 @@
         <hr />
         {{ template "display" .Data }}
         <script>
+            htmx.logAll();
             htmx.onLoad(function() {
                 htmx.on('htmx:beforeSwap', function(evt) {
                     if (evt.detail.xhr && evt.detail.xhr.status === 422) {
@@ -62,9 +65,30 @@
 {{ end }}
 
 {{ block "contact" . }}
-<div>
-    <span>name: <span>{{ .Name }}</span></span>
-    <span>email: <span>{{ .Email }}</span></span>
+<div id="contact-{{ .Id }}" 
+     class="contact flex">
+    <span class="p-4">name: <span>{{ .Name }}</span></span>
+    <span class="p-4">email: <span>{{ .Email }}</span></span>
+    <button 
+        hx-swap="outerHTML swap:1s" 
+        hx-indicator="#ci-{{ .Id }}"
+        hx-target="#contact-{{ .Id }}"
+        hx-delete="/contact/{{ .Id }}" 
+        class="
+            flex-2 
+            bg-red-500 
+            hover:bg-red-700 
+            text-white 
+            font-bold 
+            py-1 
+            px-2 rounded">
+        Delete
+    </button>
+    <div id="ci-{{ .Id }}" 
+        class="htmx-indicator" 
+        hx-indicator="true">
+        <img src="/images/bars.svg" alt="loading"/>
+    </div>
 </div>
 {{ end }}
 

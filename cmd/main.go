@@ -3,6 +3,7 @@ package main
 import (
 	"io"
 	"net/http"
+	"strconv"
 	"text/template"
 
 	"github.com/labstack/echo"
@@ -27,19 +28,32 @@ type Count struct {
     Count int
 }
 
+var id = 0
 type Contact struct {
     Name string
     Email string
+    Id int
 } 
 
 func newContact(name string, email string) Contact {
+    id++
     return Contact{
         Name: name,
         Email: email,
+        Id: id,
     }
 }
 
 type Contacts = []Contact
+
+func (d *Data) indexOf(id int) int {
+    for i, contact := range d.Contacts {
+        if contact.Id == id {
+            return i 
+        }
+    }
+    return -1  
+}
 
 func (d *Data) hasEmail(email string) bool {
     hasEmail := false
@@ -98,6 +112,9 @@ func main() {
         Output: e.Logger.Output(),
     }))
 
+    e.Static("/css", "css")
+    e.Static("/images", "images")
+
     // Handler
     e.GET("/", func(c echo.Context) error {
         return c.Render(http.StatusOK, "index", page)
@@ -120,6 +137,23 @@ func main() {
 
         c.Render(200, "form", newFormData())
         return c.Render(http.StatusOK, "out-band-contact", contact)
+    })
+
+    e.DELETE("/contact/:id", func(c echo.Context) error {
+        idStr := c.Param("id")
+        id, err := strconv.Atoi(idStr)
+        if err != nil {
+            return c.String(http.StatusBadRequest, "Invalid id")
+        }
+
+        index := page.Data.indexOf(id)
+        if index == -1 {
+            return c.String(http.StatusNotFound, "Contact not found")
+        }
+
+        page.Data.Contacts = append(page.Data.Contacts[:index], page.Data.Contacts[index+1:]...)
+
+        return c.HTML(http.StatusOK, "")
     })
 
     // Start server

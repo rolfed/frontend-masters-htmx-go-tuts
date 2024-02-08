@@ -1,0 +1,19 @@
+.htmx-indicator {
+    opacity: 0;
+    transition: opacity 1s ease-out;
+}
+
+.htmx-request .htmx-indicator {
+    opacity: 1;
+}
+
+.htmx-request.htmx-indicator {
+    opacity: 1;
+}
+
+.contact.htmx-swapping {
+    opacity: 0;
+    transition: opacity 500ms ease-in;
+}
+
+
